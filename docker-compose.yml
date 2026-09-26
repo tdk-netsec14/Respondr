@@ -1,0 +1,78 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Respondr — Docker Compose (NOT YET USABLE)
+#
+# This file is a placeholder, not a working stack. Specifically:
+#
+#   * No Dockerfile exists at backend/Dockerfile or frontend/Dockerfile, so the
+#     two `build:` directives below cannot succeed.
+#   * PostgreSQL, Redis, Kafka, Elasticsearch, Prometheus and Grafana are all
+#     commented out.
+#   * Both declared services are gated behind the `full` profile, so a plain
+#     `docker compose up` starts nothing.
+#
+# To run Respondr today, start PostgreSQL yourself and run the backend and
+# frontend directly. See "Local Development" in README.md.
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── Backend ────────────────────────────────────────────────────────────────
+  # Blocked: requires backend/Dockerfile (does not exist).
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: respondr/backend:dev
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    profiles:
+      - full
+
+  # ── Frontend ───────────────────────────────────────────────────────────────
+  # Blocked: requires frontend/Dockerfile (does not exist).
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: respondr/frontend:dev
+    ports:
+      - "5173:5173"
+    profiles:
+      - full
+
+  # ── PostgreSQL 16 ──────────────────────────────────────────────────────────
+  # Uncomment once a backend/frontend Dockerfile is added, or run PostgreSQL
+  # directly with:  docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=respondr postgres:16
+  # postgres:
+  #   image: postgres:16
+  #   profiles: ["full"]
+  #   environment:
+  #     POSTGRES_DB: respondr
+  #     POSTGRES_USER: respondr
+  #     POSTGRES_PASSWORD: responddr
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+
+  # ── Redis 7 ────────────────────────────────────────────────────────────────
+  # Optional. The backend degrades gracefully to PostgreSQL when Redis is absent.
+  # redis:
+  #   image: redis:7
+  #   profiles: ["full"]
+  #   ports:
+  #     - "6379:6379"
+
+  # ── Kafka ──────────────────────────────────────────────────────────────────
+  # Required for the outbox relay to actually deliver events. Until this exists,
+  # the relay logs and marks events published without delivering them.
+  # kafka:
+  #   image: confluentinc/cp-kafka:7.6.0
+  #   profiles: ["full"]
+  #   ports:
+  #     - "9092:9092"
+
+# volumes:
+#   pgdata:
