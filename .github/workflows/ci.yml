@@ -56,6 +56,9 @@ jobs:
       - name: Install dependencies
         run: npm --prefix frontend ci
 
+      - name: Run tests
+        run: npm --prefix frontend test
+
       - name: Build
         run: npm --prefix frontend run build
 
